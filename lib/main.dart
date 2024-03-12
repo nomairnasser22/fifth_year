@@ -1,7 +1,11 @@
 import 'package:fifthproject/login/signup_view.dart';
+import 'package:fifthproject/login/signup_view2.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart'; 
+import 'login/singin_view.dart';
 
-void main() {
+void main() async {
+  await GetStorage.init();
   runApp(const MyApp());
 }
 
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Singup(),
+      home: const Singup2(),
     );
   }
 }
