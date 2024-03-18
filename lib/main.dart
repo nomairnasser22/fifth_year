@@ -1,8 +1,9 @@
-import 'package:fifthproject/login/signup_view.dart';
-import 'package:fifthproject/login/signup_view2.dart';
+import 'package:fifthproject/core/classes/mybindings.dart';
+import 'package:fifthproject/screens/onboarding/onboarding_view.dart';
+import 'package:fifthproject/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart'; 
-import 'login/singin_view.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 void main() async {
   await GetStorage.init();
@@ -15,13 +16,21 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        fontFamily: "Inter",
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: TColor.primary,
+          background: TColor.gray80,
+          primary: TColor.primary,
+          primaryContainer: TColor.gray60,
+          secondary: TColor.secondary,
+        ),
       ),
-      home: const Singup2(),
+      initialBinding: MyBindings(),
+      home: const Onboarding(),
     );
   }
 }

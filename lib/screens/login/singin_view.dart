@@ -1,13 +1,19 @@
 import 'package:fifthproject/core/classes/my_new_api.dart';
+import 'package:fifthproject/core/classes/stutesrequest.dart';
+import 'package:fifthproject/core/function/checkinternet.dart';
+import 'package:fifthproject/core/function/handlingdata.dart';
+import 'package:fifthproject/core/model/token_login.dart';
 import 'package:fifthproject/keys_storage.dart';
-import 'package:fifthproject/login/signup_view.dart';
-import 'package:fifthproject/login/signup_view2.dart';
+import 'package:fifthproject/screens/bottom_bar/bottom_bar_view.dart';
+import 'package:fifthproject/screens/login/signup_view.dart';
+import 'package:fifthproject/screens/login/signup_view2.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../common_widget/rounded_textField.dart';
-import '../../common_widget/primary_button.dart';
-import '../../common/color_extensions.dart';
-import '../../common_widget/secondary_button.dart';
+import '../../../common_widget/rounded_textField.dart';
+import '../../../common_widget/primary_button.dart';
+import '../../../common/color_extensions.dart';
+import '../../../common_widget/secondary_button.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -18,23 +24,51 @@ class Signin extends StatefulWidget {
 
 class _SigninState extends State<Signin> {
   ApiClient _api = ApiClient();
+  String? info;
+  Tokens? token;
+  late StatusRequest statusRequest;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isRemembered = false;
   GetStorage? getStorage = GetStorage();
 
   Future<void> _hadling() async {
+    statusRequest = StatusRequest.loading;
     print("now i enter to _handling method in login page");
     Map<String, dynamic> userData = {
       "username": emailController.text,
       "password": passwordController.text,
     };
     var res = await _api.login(userData);
-    print("I think data hadn't show");
-    print("the response is ${res.tokens.access}");
-    getStorage!.write(KeysStorage.accessLogin, res.tokens.access);
-    getStorage!.write(KeysStorage.refreshLogin, res.tokens.refresh);
-    print(getStorage!.read(KeysStorage.accessLogin));
+    var right;
+    print("the status request is ${res}");
+    res.fold((l) {
+      info = l.username;
+      token = l.tokens;
+    }, (r) {
+      right = r;
+    });
+    statusRequest = handlingData(right);
+    print("the status request is ${statusRequest}");
+    if (statusRequest == StatusRequest.success) {
+      print("I think data hadn't show");
+      print("the response is ${token!.access}");
+      getStorage!.write(KeysStorage.accessLogin, token!.access);
+      getStorage!.write(KeysStorage.refreshLogin, token!.refresh);
+      print(getStorage!.read(KeysStorage.accessLogin));
+      Get.to(BottomBarView());
+    } else if (statusRequest == StatusRequest.loading) {
+      CircularProgressIndicator();
+    } else if (statusRequest == StatusRequest.serverfailure) {
+      print("there is failure server ");
+      Text("there is failure server ");
+    } else if (statusRequest == StatusRequest.offlinefailure) {
+      print("there is offline failure ");
+      Text("there is offline failure");
+    } else {
+      print("the status request is ${statusRequest}");
+      Text("something wrong");
+    }
   }
 
   @override
@@ -45,15 +79,20 @@ class _SigninState extends State<Signin> {
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              "assets/img/app_logo.png",
-              width: media.width * 0.5,
-              fit: BoxFit.contain,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: media.width * 0.1),
+              child: Image.asset(
+                "assets/img/app_logo.png",
+                width: media.width * 0.5,
+                fit: BoxFit.contain,
+              ),
             ),
-            const Spacer(),
+            SizedBox(
+              height: media.height * 0.15,
+            ),
             RoundedTextField(
               title: "LogIn",
               keyboardType: TextInputType.emailAddress,
@@ -121,7 +160,9 @@ class _SigninState extends State<Signin> {
                 onPressed: () {
                   _hadling();
                 }),
-            const Spacer(),
+            SizedBox(
+              height: media.height * 0.25,
+            ),
             Text(
               "If you don't have an account yet",
               style: TextStyle(

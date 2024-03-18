@@ -24,10 +24,13 @@ class RoundedTextField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                title,
-                textAlign: titleAlign,
-                style: TextStyle(color: TColor.gray50, fontSize: 12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 9),
+                child: Text(
+                  title,
+                  textAlign: titleAlign,
+                  style: TextStyle(color: TColor.gray50, fontSize: 12),
+                ),
               ),
             )
           ],
@@ -43,15 +46,19 @@ class RoundedTextField extends StatelessWidget {
             border: Border.all(color: TColor.gray70),
             borderRadius: BorderRadius.circular(15),
           ),
-          child: TextField(
-            cursorColor: Colors.white,
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            decoration: const InputDecoration(
-              focusedBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              style: TextStyle(color: Colors.white70),
+              cursorColor: Colors.white,
+              controller: controller,
+              keyboardType: keyboardType,
+              obscureText: obscureText,
+              decoration: const InputDecoration(
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+              ),
             ),
           ),
         ),
